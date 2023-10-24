@@ -6,7 +6,7 @@ This code is an implementation of a lane detection algorithm using OpenCV and Py
 ## Code Description
 
 ### Importing Libraries
-The code begins by importing necessary libraries, which include OpenCV (`cv2`) and NumPy (`numpy`). Additionally, there are some custom functions imported from a module called `manip_functions` (which is assumed to contain functions such as `warp`, `abs_sobel_thresh`, `fit_polynomial`, and `measure_curvature_pixels`).
+The code begins by importing necessary libraries, which include OpenCV (`cv2`) and NumPy (`numpy`). Additionally, there are some custom functions imported from a module called `manip_functions` (which contains functions `warp`, `abs_sobel_thresh`, `fit_polynomial`, and `measure_curvature_pixels`).
 
 ### Lane Detection Functions
 
@@ -39,4 +39,3 @@ The code allows user interaction by pressing the 'q' key to exit the video playb
 
 This code can serve as a foundation for building more advanced lane detection and lane-keeping systems. It may need further parameter tuning to work effectively on different road and lighting conditions.
 
-Remember that this code assumes the existence of a module `manip_functions` with the required functions. You should ensure that this module contains the necessary functions for the code to work correctly.
