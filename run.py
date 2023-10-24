@@ -3,21 +3,6 @@ import numpy as np
 import manip_functions as f
 
 
-def measure_curvature_pixels(ploty, left_fit, right_fit):
-    y_eval = np.max(ploty)
-    left_curverad = (
-        (1 + (2 * left_fit[0] * y_eval + left_fit[1]) ** 2) ** 1.5
-    ) / np.absolute(2 * left_fit[0])
-    right_curverad = (
-        (1 + (2 * right_fit[0] * y_eval + right_fit[1]) ** 2) ** 1.5
-    ) / np.absolute(2 * right_fit[0])
-
-    return left_curverad, right_curverad
-
-
-########################################################
-
-
 cap = cv2.VideoCapture("H:/auriga/cv/Lane Detection Project/project_video.mp4")
 
 ksize = 15
@@ -64,8 +49,34 @@ while cap.isOpened():
 
     final[:, : v.shape[1] // 2] = sobelS[:, : v.shape[1] // 2]
     # final[(dir_binary == 255) * (sobelS == 1)] = 255
-    final = f.fit_polynomial(final)
-    cv2.imshow("f", final)
+    final, abc, offset = f.fit_polynomial(final)
+    # cv2.imshow("f", final)
+    # cv2.imshow("w", final)
+    final = f.warp(final, 0)
+    final = cv2.cvtColor(final, cv2.COLOR_RGB2BGR)
+    # cv2.imshow("p", poly)
+    # cv2.imshow("w", final)
+    R = int(1 + ((2 * abc[0] + abc[1]) ** 2) ** 1.5 / abs(2 * abc[0]))
+    if R < 10:
+        text = "not parabolic"
+
+    else:
+        text = "Curve radius=%.2f m" % R
+
+    frame = cv2.putText(frame, text, (5, 50), 1, 1, (255, 0, 0))
+    if offset < 0:
+        text2 = "%.4fm left of center" % (-offset)
+    else:
+        text2text2 = "%.4fm right of center" % offset
+    frame = cv2.putText(frame, text2, (5, 25), 1, 1, (255, 0, 0))
+    # print(R)
+    # non_zero_mask = (final != [0, 0, 0]).all(axis=2)
+    # frame[non_zero_mask] = final[non_zero_mask]
+    # frame = cv2.addWeighted(frame, 1, final, 10, 0)
+    sum_rgb = np.sum(np.abs(final), axis=2)
+    non_zero_mask = sum_rgb > 0
+
+    frame[non_zero_mask] = final[non_zero_mask]
 
     ##################################################
 
@@ -192,19 +203,20 @@ while cap.isOpened():
     # cv2.imshow("v", warp(vBin))
     # cv2.imshow("mag", warp(mbinary))
 
-    y = np.array(
-        [
-            [590 // 2, 450 // 2],
-            [690 // 2, 450 // 2],
-            [1080 // 2, 700 // 2],
-            [200 // 2, 700 // 2],
-        ]
-    )
+    # y = np.array(
+    #     [
+    #         [590 // 2, 450 // 2],
+    #         [690 // 2, 450 // 2],
+    #         [1080 // 2, 700 // 2],
+    #         [200 // 2, 700 // 2],
+    #     ]
+    # )
     # cv2.imshow("canny", warp(canny))
     # cv2.imshow("s", s)
 
     # y = np.array([[595, 452], [690, 452], [1106, 681], [300, 681]])
     # frame = cv2.polylines(frame, np.int32([y]), True, 2)
+    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     cv2.imshow("frame", frame)
     # cv2.imshow("title", frame)
 
